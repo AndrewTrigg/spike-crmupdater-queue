@@ -2,29 +2,29 @@ extends layout.pug
 
 block content
     .section
-        form(action="/" method="post")
-            .card.has-background-warning
-                .card-content
-                    .field 
-                        label.label.is-size-4 User ID
-                        .control
-                            input.input.is-size-4.has-background-warning-light(type='text' name="user_id")
-                    .field
-                        label.label.is-size-4 Forename
-                        .control
-                            input.input.is-size-4.has-background-warning-light(type='text' name="forename")
-
-                    .field
-                        label.label.is-size-4 Surname
-                        .control
-                            input.input.is-size-4.has-background-warning-light(type='text' name="surname")
-
-                    .field
-                        label.label.is-size-4 Email
-                        .control
-                            input.input.is-size-4.has-background-warning-light(type='email' name="email")
-
-                    .field.is-grouped
-                        .control
-                            button.button.is-link.is-size-4 Submit
+        .columns.is-desktop
+            each user in users
+                .column
+                    .card.has-background-warning
+                        .card-content
+                            .level
+                                .level-left
+                                    .level-item.has-text-weight-bold ID
+                                .level-right
+                                    .level-item= user.user_id
+                            .level
+                                .level-left
+                                    .level-item.has-text-weight-bold Forename
+                                .level-right
+                                    .level-item= user.forename
+                            .level
+                                .level-left
+                                    .level-item.has-text-weight-bold Surname
+                                .level-right
+                                    .level-item= user.surname
+                            .level
+                                .level-left
+                                    .level-item.has-text-weight-bold Email
+                                .level-right
+                                    .level-item= user.email
 
