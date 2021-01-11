@@ -2,8 +2,13 @@ html
     head
         title CRM
         link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css')
-        //- meta(http-equiv='refresh' content='5')
     body
         .container
-            block content
+            .section
+                label#disable.checkbox
+                    input(type="checkbox")
+                    span Disable
+        #crm-app
+            .container
+                block content
         script(src="js/script.js")

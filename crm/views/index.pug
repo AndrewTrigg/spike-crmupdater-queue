@@ -1,30 +1,3 @@
 extends layout.pug
 
 block content
-    .section
-        .columns.is-desktop
-            each user in users
-                .column
-                    .card.has-background-warning
-                        .card-content
-                            .level
-                                .level-left
-                                    .level-item.has-text-weight-bold ID
-                                .level-right
-                                    .level-item= user.user_id
-                            .level
-                                .level-left
-                                    .level-item.has-text-weight-bold Forename
-                                .level-right
-                                    .level-item= user.forename
-                            .level
-                                .level-left
-                                    .level-item.has-text-weight-bold Surname
-                                .level-right
-                                    .level-item= user.surname
-                            .level
-                                .level-left
-                                    .level-item.has-text-weight-bold Email
-                                .level-right
-                                    .level-item= user.email
-
