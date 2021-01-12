@@ -2,13 +2,14 @@ window.onload = function () {
     setInterval(renderContent, 4000)
     renderContent()
     const disable = document.getElementById('disable')
+
+    // add the ability to disable the api - pretend it is unavailable
     disable.addEventListener('click', async (evt) => {
         evt.preventDefault()
         let response = await fetch('/api/toggle-disable')
         let value = await response.json()
         evt.target.checked = value
     })
-
 }
 
 async function renderContent () {
@@ -27,7 +28,6 @@ function pageContent (users) {
             </div>
         </div>
     `)
-
 }
 
 async function deleteUser (id) {
@@ -39,7 +39,6 @@ async function deleteUser (id) {
 }
 
 function userCard (user) {
-
     return (`
         <div class="column" data-id="${user.user_id}">
             <div class="card has-background-warning">

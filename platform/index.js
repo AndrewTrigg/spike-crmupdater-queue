@@ -4,7 +4,16 @@ const path = require('path')
 const fetch = require('node-fetch')
 const bodyParser = require('body-parser')
 const Queue = require('bull')
-const crmQueue = new Queue('crm updates', 'redis://redis:6379')
+
+const crmQueue = new Queue('crm updates', 'redis://redis:6379', {settings: {
+    backoffStrategies: {
+        custom: function (attemptsMade, err) {
+            if (err.message === '400') return -1
+            return (Math.pow(2, attemptsMade) * 1000)
+        }
+    }
+}})
+
 const Arena = require('bull-arena')
 
 Arena({
@@ -23,24 +32,43 @@ app.use('/static', express.static(path.join(__dirname, 'public')))
 const urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 crmQueue.process('*', async function (job, done) {
-    // console.log({job})
-    let c = await crmQueue.getDelayed()
-    console.log({c})
-    let b = await crmQueue.getJobs('crm updates')
-    console.log({b})
-    let a = await crmQueue.getJobs(job.name)
-    console.log({a})
+    // let delayedItems = await crmQueue.getDelayed()
+
+    // let updates = [...delayedItems, job]
+    //     .filter(delayedItem => delayedItem.name === job.name )
+
+    // let currentRecordUpdates = updates
+    //     .sort((itemA, itemB) => +itemA.id - +itemB.id)
+    //     .map(item => JSON.parse(item.data.update))
+
+    // if (currentRecordUpdates.length > 1) {
+    //     await Promise.all(updates.map(update => crmQueue.removeJobs(update.id)))
+    //     let combined = currentRecordUpdates.reduce((acc, curr) => ({...curr, ...acc}), {})  
+    //     crmQueue.add(
+    //         combined.user_id, 
+    //         { update: JSON.stringify(combined) }, 
+    //         { 
+    //             delay: 2000,
+    //             backoff: { type: 'exponential', delay: 2000 },
+    //             attempts: 20 
+    //         }
+    //     )  
+    // }
+
     try {
         let data = await fetch('http://crm:3000/api', {
             method: 'post',
             body: job.data.update,
             headers: { 'Content-Type': 'application/json' }
         })
-        await data.json()
-        done()
+        if (data.status >= 300) {
+            throw (new Error(data.status))
+        } else {
+            await data.json()
+            done()
+        }
     } catch (err) {
-        console.log('Request failed!')
-        done(new Error(err))
+        done(err)
     }
 })
 
@@ -64,7 +92,7 @@ app.post('/', urlencodedParser, async (req, res) => {
         req.body.user_id, 
         { update: JSON.stringify(nonNullValues) }, 
         { 
-            backoff: { type: 'exponential', delay: 2000 },
+            backoff: { type: 'custom', delay: 2000 },
             attempts: 20 
         }
     )

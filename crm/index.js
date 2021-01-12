@@ -32,6 +32,9 @@ app.post('/api', jsonParser, async (req, res) => {
         console.log('The api is down!!')
         return res.sendStatus(500)
     }
+    if (req.body.badRequest) {
+        return res.sendStatus(400)
+    }
     console.log('Successfully hit api endpoint!!')
     let user = await User.findOneAndUpdate({user_id: req.body.user_id}, req.body, {upsert: true})
     res.json({stuff: user})
